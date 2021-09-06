@@ -6,6 +6,6 @@ namespace Service.NewsImporter.Domain
 {
     public interface INewsStorage
     {
-        Task SaveNewsAsync(List<News> news);
+        Task SaveNewsAsync(List<ExternalNews> news);
     }
 }

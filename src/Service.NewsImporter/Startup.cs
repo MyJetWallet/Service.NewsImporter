@@ -61,6 +61,7 @@ namespace Service.NewsImporter
         {
             builder.RegisterModule<SettingsModule>();
             builder.RegisterModule<ServiceModule>();
+            builder.RegisterModule<ClientModule>();
         }
     }
 }

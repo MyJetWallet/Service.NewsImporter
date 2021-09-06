@@ -15,7 +15,7 @@ namespace Service.NewsImporter.Services.ExternalSources
         private static readonly string Token = Program.Settings.StockNewsToken;
         private static readonly int ImportCount = Program.Settings.StockNewsImportCount;
         
-        public async Task<List<News>> GetNewsAsync(List<string> tickers)
+        public async Task<List<ExternalNews>> GetNewsAsync(List<string> tickers)
         {
             var requestUrl = GetRequestUrl(tickers);
             
@@ -34,13 +34,13 @@ namespace Service.NewsImporter.Services.ExternalSources
 
             if (string.IsNullOrWhiteSpace(body))
             {
-                return new List<News>();
+                return new List<ExternalNews>();
             }
             var stockNewsApiResponse = JsonConvert.DeserializeObject<StockNewsApiResponse>(body);
 
             if (stockNewsApiResponse?.data != null && stockNewsApiResponse.data.Any())
             {
-                var newsList = stockNewsApiResponse.data.Select(e => new News()
+                var newsList = stockNewsApiResponse.data.Select(e => new ExternalNews()
                     {
                         Date = e.date,
                         ImageUrl = e.image_url,
@@ -53,7 +53,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                 ).ToList();
                 return newsList;
             }
-            return new List<News>();
+            return new List<ExternalNews>();
         }
 
         private string GetRequestUrl(IEnumerable<string> tickers)

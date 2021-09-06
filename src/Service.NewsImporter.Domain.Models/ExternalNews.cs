@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Service.NewsImporter.Domain.Models
 {
-    public class News
+    public class ExternalNews
     {
         public string Title { get; set; }
         public string NewsUrl { get; set; }

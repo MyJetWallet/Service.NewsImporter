@@ -1,6 +1,4 @@
 ﻿using Autofac;
-using Autofac.Core;
-using Autofac.Core.Registration;
 using Service.NewsImporter.Domain;
 using Service.NewsImporter.Domain.ExternalSources;
 using Service.NewsImporter.Jobs;

@@ -16,9 +16,9 @@ namespace Service.NewsImporter.Services
             _stockNewsImporter = stockNewsImporter;
         }
 
-        public async Task<List<News>> GetNewsAsync(List<string> tickers)
+        public async Task<List<ExternalNews>> GetNewsAsync(List<string> tickers)
         {
-            var news = new List<News>();
+            var news = new List<ExternalNews>();
 
             var stockNews = await _stockNewsImporter.GetNewsAsync(tickers);
             if (stockNews != null && stockNews.Any())

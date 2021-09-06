@@ -6,6 +6,6 @@ namespace Service.NewsImporter.Domain
 {
     public interface IExternalNewsImporter
     {
-        Task<List<News>> GetNewsAsync(List<string> tickers);
+        Task<List<ExternalNews>> GetNewsAsync(List<string> tickers);
     }
 }
