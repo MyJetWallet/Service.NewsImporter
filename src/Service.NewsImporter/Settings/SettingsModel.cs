@@ -13,5 +13,8 @@ namespace Service.NewsImporter.Settings
 
         [YamlProperty("NewsImporter.ElkLogs")]
         public LogElkSettings ElkLogs { get; set; }
+
+        [YamlProperty("NewsImporter.NewsImportTimerInSec")]
+        public double NewsImportTimerInSec { get; set; }
     }
 }

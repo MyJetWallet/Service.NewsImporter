@@ -10,9 +10,7 @@ using MyJetWallet.Sdk.GrpcSchema;
 using MyJetWallet.Sdk.Service;
 using Prometheus;
 using ProtoBuf.Grpc.Server;
-using Service.NewsImporter.Grpc;
 using Service.NewsImporter.Modules;
-using Service.NewsImporter.Services;
 using SimpleTrading.BaseMetrics;
 using SimpleTrading.ServiceStatusReporterConnector;
 
@@ -50,8 +48,6 @@ namespace Service.NewsImporter
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcSchema<HelloService, IHelloService>();
-
                 endpoints.MapGrpcSchemaRegistry();
 
                 endpoints.MapGet("/", async context =>

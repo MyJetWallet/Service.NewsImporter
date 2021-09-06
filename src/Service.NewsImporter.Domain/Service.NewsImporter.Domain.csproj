@@ -4,4 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Service.NewsImporter.Domain.Models\Service.NewsImporter.Domain.Models.csproj" />
+  </ItemGroup>
+
 </Project>
