@@ -11,6 +11,7 @@ namespace Service.NewsImporter.Domain.Models
         public string Source { get; set; }
         public DateTime Date { get; set; }
         public string Sentiment { get; set; }
-        public List<string> Tickers { get; set; }
+        public List<string> ExternalTickers { get; set; }
+        public List<string> InternalTickers { get; set; }
     }
 }

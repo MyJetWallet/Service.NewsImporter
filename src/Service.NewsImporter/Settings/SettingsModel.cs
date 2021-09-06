@@ -28,5 +28,8 @@ namespace Service.NewsImporter.Settings
 
         [YamlProperty("NewsImporter.NewsRepositoryGrpcServiceUrl")]
         public string NewsRepositoryGrpcServiceUrl { get; set; }
+
+        [YamlProperty("NewsImporter.MyNoSqlWriterUrl")]
+        public string MyNoSqlWriterUrl { get; set; }
     }
 }

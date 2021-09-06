@@ -1,6 +1,8 @@
 ﻿using Autofac;
+using MyJetWallet.Sdk.NoSql;
 using Service.NewsImporter.Domain;
 using Service.NewsImporter.Domain.ExternalSources;
+using Service.NewsImporter.Domain.NoSql;
 using Service.NewsImporter.Jobs;
 using Service.NewsImporter.Services;
 using Service.NewsImporter.Services.ExternalSources;
@@ -38,9 +40,13 @@ namespace Service.NewsImporter.Modules
                 .SingleInstance();
             
             builder
-                .RegisterType<TickerStorage>()
-                .As<ITickerStorage>()
+                .RegisterType<ExternalTickerSettingsStorage>()
+                .As<IExternalTickerSettingsStorage>()
+                .As<IStartable>()
+                .AutoActivate()
                 .SingleInstance();
+            
+            builder.RegisterMyNoSqlWriter<ExternalTickerSettingsNoSql>(Program.ReloadedSettings(e => e.MyNoSqlWriterUrl), ExternalTickerSettingsNoSql.TableName);
         }
     }
 }

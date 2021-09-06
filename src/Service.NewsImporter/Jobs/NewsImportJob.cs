@@ -19,7 +19,6 @@ namespace Service.NewsImporter.Jobs
             _newsImportManager = newsImportManager;
             _logger = logger;
             _timer = new MyTaskTimer(nameof(NewsImportJob), TimeSpan.FromSeconds(Program.Settings.NewsImportTimerInSec), _logger, DoTime);
-
         }
 
         private async Task DoTime()

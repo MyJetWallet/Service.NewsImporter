@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Service.NewsImporter.Domain.NoSql\Service.NewsImporter.Domain.NoSql.csproj" />
     <ProjectReference Include="..\Service.NewsImporter.Domain\Service.NewsImporter.Domain.csproj" />
     <ProjectReference Include="..\Service.NewsImporter.Grpc\Service.NewsImporter.Grpc.csproj" />
   </ItemGroup>

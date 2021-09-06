@@ -15,7 +15,7 @@ namespace Service.NewsImporter.Services.ExternalSources
         private static readonly string Token = Program.Settings.StockNewsToken;
         private static readonly int ImportCount = Program.Settings.StockNewsImportCount;
         
-        public async Task<List<ExternalNews>> GetNewsAsync(List<string> tickers)
+        public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers)
         {
             var requestUrl = GetRequestUrl(tickers);
             
@@ -47,7 +47,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                         NewsUrl = e.news_url,
                         Sentiment = e.sentiment,
                         Source = e.source_name,
-                        Tickers = e.tickers,
+                        ExternalTickers = e.tickers,
                         Title = e.text
                     }
                 ).ToList();

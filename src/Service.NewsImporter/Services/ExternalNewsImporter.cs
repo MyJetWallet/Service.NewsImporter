@@ -16,7 +16,7 @@ namespace Service.NewsImporter.Services
             _stockNewsImporter = stockNewsImporter;
         }
 
-        public async Task<List<ExternalNews>> GetNewsAsync(List<string> tickers)
+        public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers)
         {
             var news = new List<ExternalNews>();
 

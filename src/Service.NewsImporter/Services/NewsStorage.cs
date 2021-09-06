@@ -25,13 +25,10 @@ namespace Service.NewsImporter.Services
             {
                 Console.WriteLine(JsonConvert.SerializeObject(e));
             }
-        }
-
-        public async Task PushToNewsRepository(IEnumerable<ExternalNews> news)
-        {
+            
             var internalNews = news.Select(e => new News()
             {
-                AssociatedAssets = e.Tickers,
+                AssociatedAssets = e.InternalTickers,
                 Lang = "en",
                 Source = e.Source,
                 Timestamp = e.Date,
@@ -40,7 +37,7 @@ namespace Service.NewsImporter.Services
             });
             foreach (var e in internalNews)
             {
-                await _newsService.AddOrUpdateNews(e);
+                //await _newsService.AddOrUpdateNews(e);
             }
         }
     }
