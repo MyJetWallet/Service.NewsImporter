@@ -26,7 +26,7 @@ namespace Service.NewsImporter.Settings
         [YamlProperty("NewsImporter.StockNewsImportCount")]
         public int StockNewsImportCount { get; set; }
 
-        [YamlProperty("NewsImporter.NewsRepositoryGrpcUrl")]
-        public string NewsRepositoryGrpcUrl { get; set; }
+        [YamlProperty("NewsImporter.NewsRepositoryGrpcServiceUrl")]
+        public string NewsRepositoryGrpcServiceUrl { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace Service.NewsImporter.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterNewsRepositoryClient(Program.Settings.NewsRepositoryGrpcUrl);
+            builder.RegisterNewsRepositoryClient(Program.Settings.NewsRepositoryGrpcServiceUrl);
         }
     }
 }
