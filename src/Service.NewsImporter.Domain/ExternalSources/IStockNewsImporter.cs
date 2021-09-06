@@ -1,4 +1,4 @@
-namespace Service.NewsImporter.Domain
+namespace Service.NewsImporter.Domain.ExternalSources
 {
     public interface IStockNewsImporter : IExternalNewsImporter
     {

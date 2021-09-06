@@ -2,8 +2,10 @@
 using Autofac.Core;
 using Autofac.Core.Registration;
 using Service.NewsImporter.Domain;
+using Service.NewsImporter.Domain.ExternalSources;
 using Service.NewsImporter.Jobs;
 using Service.NewsImporter.Services;
+using Service.NewsImporter.Services.ExternalSources;
 
 namespace Service.NewsImporter.Modules
 {
@@ -20,6 +22,26 @@ namespace Service.NewsImporter.Modules
             builder
                 .RegisterType<NewsImportManager>()
                 .As<INewsImportManager>()
+                .SingleInstance();
+            
+            builder
+                .RegisterType<ExternalNewsImporter>()
+                .As<IExternalNewsImporter>()
+                .SingleInstance();
+            
+            builder
+                .RegisterType<StockNewsImporter>()
+                .As<IStockNewsImporter>()
+                .SingleInstance();
+            
+            builder
+                .RegisterType<NewsStorage>()
+                .As<INewsStorage>()
+                .SingleInstance();
+            
+            builder
+                .RegisterType<TickerStorage>()
+                .As<ITickerStorage>()
                 .SingleInstance();
         }
     }
