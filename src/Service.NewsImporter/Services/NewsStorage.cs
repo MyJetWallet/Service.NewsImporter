@@ -33,7 +33,9 @@ namespace Service.NewsImporter.Services
                 Source = e.Source,
                 Timestamp = e.Date,
                 Topic = e.Title,
-                UrlAddress = e.NewsUrl
+                UrlAddress = e.NewsUrl,
+                ImageUrl = e.ImageUrl,
+                Sentiment = e.Sentiment
             });
             foreach (var e in internalNews)
             {
