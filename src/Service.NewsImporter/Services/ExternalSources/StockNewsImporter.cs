@@ -15,6 +15,8 @@ namespace Service.NewsImporter.Services.ExternalSources
         private static readonly string Token = Program.Settings.StockNewsToken;
         private static readonly int ImportCount = Program.Settings.StockNewsImportCount;
         
+        private DateTime? LastImportedNews { get; set; }
+        
         public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers)
         {
             var requestUrl = GetRequestUrl(tickers);
@@ -51,6 +53,13 @@ namespace Service.NewsImporter.Services.ExternalSources
                         Title = e.text
                     }
                 ).ToList();
+
+                if (LastImportedNews != null)
+                {
+                    newsList = newsList.Where(e => e.Date > LastImportedNews).ToList();
+                }
+                LastImportedNews = newsList.Max(e => e.Date);
+                
                 return newsList;
             }
             return new List<ExternalNews>();
