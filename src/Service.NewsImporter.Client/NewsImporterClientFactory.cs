@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using MyJetWallet.Sdk.Grpc;
+using Service.NewsImporter.Grpc;
 
 namespace Service.NewsImporter.Client
 {
@@ -9,5 +10,7 @@ namespace Service.NewsImporter.Client
         public NewsImporterClientFactory(string grpcServiceUrl) : base(grpcServiceUrl)
         {
         }
+        
+        public IExternalTickerSettingsService GetAExternalTickerSettingsService() => CreateGrpcService<IExternalTickerSettingsService>();
     }
 }
