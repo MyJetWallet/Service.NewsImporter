@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Service.NewsImporter.Domain.Models\Service.NewsImporter.Domain.Models.csproj" />
+    <ProjectReference Include="..\Service.NewsImporter.Domain.NoSql\Service.NewsImporter.Domain.NoSql.csproj" />
   </ItemGroup>
 
 </Project>

@@ -51,7 +51,6 @@ namespace Service.NewsImporter.Services
                         internalTickers.AddRange(tickerSettings.AssociateSymbols);
                 }
                 internalTickers = internalTickers.Distinct().ToList();
-                
                 news.InternalTickers = internalTickers;
             }
         }
