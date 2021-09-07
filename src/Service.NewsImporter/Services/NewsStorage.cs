@@ -37,7 +37,7 @@ namespace Service.NewsImporter.Services
             });
             foreach (var e in internalNews)
             {
-                //await _newsService.AddOrUpdateNews(e);
+                await _newsService.AddOrUpdateNews(e);
             }
         }
     }
