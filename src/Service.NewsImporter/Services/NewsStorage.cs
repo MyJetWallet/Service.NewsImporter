@@ -23,7 +23,12 @@ namespace Service.NewsImporter.Services
         {
             foreach (var e in news)
             {
-                Console.WriteLine(JsonConvert.SerializeObject(e));
+                var duplicateDateExists = news.Any(x => x.Date == e.Date && x.NewsUrl != e.NewsUrl);
+
+                if (duplicateDateExists)
+                {
+                    e.Date = e.Date.AddMilliseconds(1);
+                }
             }
             
             var internalNews = news.Select(e => new News()
