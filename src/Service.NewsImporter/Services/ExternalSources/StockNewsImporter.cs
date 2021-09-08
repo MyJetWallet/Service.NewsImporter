@@ -50,7 +50,8 @@ namespace Service.NewsImporter.Services.ExternalSources
                         Sentiment = e.sentiment,
                         Source = e.source_name,
                         ExternalTickers = e.tickers,
-                        Title = e.text
+                        Title = e.title,
+                        Description = e.text
                     }
                 ).ToList();
 

@@ -33,6 +33,7 @@ namespace Service.NewsImporter.Services
                 Source = e.Source,
                 Timestamp = e.Date,
                 Topic = e.Title,
+                Description = e.Description,
                 UrlAddress = e.NewsUrl,
                 ImageUrl = e.ImageUrl,
                 Sentiment = e.Sentiment
