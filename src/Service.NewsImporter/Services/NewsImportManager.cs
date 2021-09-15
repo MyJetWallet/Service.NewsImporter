@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Service.NewsImporter.Domain;
 using Service.NewsImporter.Domain.Models;
 using Service.NewsImporter.Domain.NoSql;
@@ -12,14 +13,17 @@ namespace Service.NewsImporter.Services
         private readonly IExternalNewsImporter _externalNewsImporter;
         private readonly INewsStorage _newsStorage;
         private readonly IExternalTickerSettingsStorage _externalTickerSettingsStorage;
+        private readonly ILogger<NewsImportManager> _logger;
 
         public NewsImportManager(IExternalNewsImporter externalNewsImporter,
             INewsStorage newsStorage,
-            IExternalTickerSettingsStorage externalTickerSettingsStorage)
+            IExternalTickerSettingsStorage externalTickerSettingsStorage,
+            ILogger<NewsImportManager> logger)
         {
             _externalNewsImporter = externalNewsImporter;
             _newsStorage = newsStorage;
             _externalTickerSettingsStorage = externalTickerSettingsStorage;
+            _logger = logger;
         }
 
         public async Task HandleNewsAsync()
@@ -36,6 +40,8 @@ namespace Service.NewsImporter.Services
                 SwapTickers(news);
                 
                 await _newsStorage.SaveNewsAsync(news);
+                
+                _logger.LogInformation("Import new is done. Count: {count}", news.Count);
             }
         }
 
