@@ -11,6 +11,7 @@ namespace Service.NewsImporter.Jobs
     {
         private readonly ILogger<NewsImportJob> _logger;
         private readonly MyTaskTimer _timer;
+        private TimeSpan _interval;
         
         private readonly INewsImportManager _newsImportManager;
 
@@ -18,11 +19,13 @@ namespace Service.NewsImporter.Jobs
         {
             _newsImportManager = newsImportManager;
             _logger = logger;
-            _timer = new MyTaskTimer(nameof(NewsImportJob), TimeSpan.FromSeconds(Program.Settings.NewsImportTimerInSec), _logger, DoTime);
+            _interval = TimeSpan.FromSeconds(Program.Settings.NewsImportTimerInSec);
+            _timer = new MyTaskTimer(nameof(NewsImportJob), TimeSpan.FromSeconds(5), _logger, DoTime);
         }
 
         private async Task DoTime()
         {
+            _timer.ChangeInterval(_interval);
             await _newsImportManager.HandleNewsAsync();
         }
 

@@ -14,6 +14,8 @@ namespace Service.NewsImporter.Services.ExternalSources
         private static readonly string ApiUrl = Program.Settings.StockNewsApiUrl;
         private static readonly string Token = Program.Settings.StockNewsToken;
         private static readonly int ImportCount = Program.Settings.StockNewsImportCount;
+
+        private static HttpClient _client = new HttpClient();
         
         private DateTime? LastImportedNews { get; set; }
         
@@ -21,7 +23,6 @@ namespace Service.NewsImporter.Services.ExternalSources
         {
             var requestUrl = GetRequestUrl(tickers);
             
-            var client = new HttpClient();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -31,7 +32,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                     {"Accept", "application/json"}
                 }
             };
-            using var response = await client.SendAsync(request);
+            using var response = await _client.SendAsync(request);
             var body = await response.Content.ReadAsStringAsync();
 
             if (string.IsNullOrWhiteSpace(body))
