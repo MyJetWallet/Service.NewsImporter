@@ -30,10 +30,38 @@ namespace Service.NewsImporter.Services.ExternalSources
         public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers,
             bool ignoreLastImportedDate = false)
         {
-            var requestUrl = GetRequestUrl(tickers);
-            
+            if (LastImportedNews != null)
+            {
+                var requestUrl = GetRequestUrl(tickers);
+                var news = await GetNewsByUrl(requestUrl);
+
+                if (LastImportedNews == null && !ignoreLastImportedDate)
+                {
+                    news = news.Where(e => e.Date > LastImportedNews).ToList();
+                }
+                if (news.Any())
+                {
+                    LastImportedNews = news.Max(e => e.Date);
+                }
+                return news;
+            }
+            var responseNews = new List<ExternalNews>();
+            foreach (var ticker in tickers)
+            {
+                var requestUrlByOneTicker = GetRequestUrl(new List<string>(){ticker});
+                var newsByOneTicker = await GetNewsByUrl(requestUrlByOneTicker);
+                responseNews.AddRange(newsByOneTicker);
+            }
+            if (responseNews.Any())
+            {
+                LastImportedNews = responseNews.Max(e => e.Date);
+            }
+            return responseNews;
+        }
+
+        private async Task<List<ExternalNews>> GetNewsByUrl(string requestUrl)
+        {
             _logger.LogInformation("Request url is {requestUrl}", requestUrl);
-            
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -46,7 +74,7 @@ namespace Service.NewsImporter.Services.ExternalSources
             using var response = await _client.SendAsync(request);
             var body = await response.Content.ReadAsStringAsync();
 
-            _logger.LogInformation("Response body is {reponseBody}", body);
+            //_logger.LogInformation("Response body is {reponseBody}", body);
             
             if (string.IsNullOrWhiteSpace(body))
             {
@@ -65,9 +93,10 @@ namespace Service.NewsImporter.Services.ExternalSources
                 _logger.LogError($"Response body has body with errors: {exMessage}", ex);
                 throw ex;
             }
+            var responseNews = new List<ExternalNews>();
             if (stockNewsApiResponse?.data != null && stockNewsApiResponse.data.Any())
             {
-                var newsList = stockNewsApiResponse.data.Select(e => new ExternalNews()
+                responseNews = stockNewsApiResponse.data.Select(e => new ExternalNews()
                     {
                         Date = e.date,
                         ImageUrl = e.image_url,
@@ -79,18 +108,9 @@ namespace Service.NewsImporter.Services.ExternalSources
                         Description = e.text
                     }
                 ).ToList();
-
-                if (LastImportedNews == null && !ignoreLastImportedDate)
-                {
-                    newsList = newsList.Where(e => e.Date > LastImportedNews).ToList();
-                }
-                if (newsList.Any())
-                {
-                    LastImportedNews = newsList.Max(e => e.Date);
-                }
-                return newsList;
             }
-            return new List<ExternalNews>();
+            _logger.LogInformation($"Finded {responseNews.Count} news by url : {requestUrl}");
+            return responseNews;
         }
 
         private string GetRequestUrl(IEnumerable<string> tickers)
