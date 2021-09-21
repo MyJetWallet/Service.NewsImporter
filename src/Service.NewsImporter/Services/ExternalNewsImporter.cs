@@ -10,10 +10,13 @@ namespace Service.NewsImporter.Services
     public class ExternalNewsImporter : IExternalNewsImporter
     {
         private readonly IStockNewsImporter _stockNewsImporter;
+        private readonly ICryptoPanicImporter _cryptoPanicImporter;
 
-        public ExternalNewsImporter(IStockNewsImporter stockNewsImporter)
+        public ExternalNewsImporter(IStockNewsImporter stockNewsImporter,
+            ICryptoPanicImporter cryptoPanicImporter)
         {
             _stockNewsImporter = stockNewsImporter;
+            _cryptoPanicImporter = cryptoPanicImporter;
         }
 
         public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers, bool ignoreLastImportedDate = false)
@@ -24,6 +27,10 @@ namespace Service.NewsImporter.Services
             if (stockNews != null && stockNews.Any())
                 news.AddRange(stockNews);
 
+            var cryptoPanicNews = await _cryptoPanicImporter.GetNewsAsync(tickers, ignoreLastImportedDate);
+            if (cryptoPanicNews != null && cryptoPanicNews.Any())
+                news.AddRange(cryptoPanicNews);
+            
             return news;
         }
     }

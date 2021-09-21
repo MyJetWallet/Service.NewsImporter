@@ -18,7 +18,7 @@ namespace Service.NewsImporter.Services.ExternalSources
         private static readonly string Token = Program.Settings.StockNewsToken;
         private static int ImportCount = Program.Settings.StockNewsImportCount;
 
-        private static HttpClient _client = new HttpClient();
+        private static readonly HttpClient Client = new HttpClient();
 
         public StockNewsImporter(ILogger<StockNewsImporter> logger)
         {
@@ -35,7 +35,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                 var requestUrl = GetRequestUrl(tickers);
                 var news = await GetNewsByUrl(requestUrl);
 
-                if (LastImportedNews == null && !ignoreLastImportedDate)
+                if (!ignoreLastImportedDate)
                 {
                     news = news.Where(e => e.Date > LastImportedNews).ToList();
                 }
@@ -71,7 +71,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                     {"Accept", "application/json"}
                 }
             };
-            using var response = await _client.SendAsync(request);
+            using var response = await Client.SendAsync(request);
             var body = await response.Content.ReadAsStringAsync();
 
             //_logger.LogInformation("Response body is {reponseBody}", body);
@@ -90,7 +90,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                     exMessage += "\n" + error;
                 }
                 var ex = new Exception(exMessage);
-                _logger.LogError($"Response body has body with errors: {exMessage}", ex);
+                _logger.LogError($"Response has body with errors: {exMessage}", ex);
                 throw ex;
             }
             var responseNews = new List<ExternalNews>();

@@ -35,6 +35,11 @@ namespace Service.NewsImporter.Modules
                 .SingleInstance();
             
             builder
+                .RegisterType<CryptoPanicImporter>()
+                .As<ICryptoPanicImporter>()
+                .SingleInstance();
+            
+            builder
                 .RegisterType<NewsStorage>()
                 .As<INewsStorage>()
                 .SingleInstance();

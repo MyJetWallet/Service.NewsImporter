@@ -31,5 +31,12 @@ namespace Service.NewsImporter.Settings
 
         [YamlProperty("NewsImporter.MyNoSqlWriterUrl")]
         public string MyNoSqlWriterUrl { get; set; }
+
+        [YamlProperty("NewsImporter.CryptoPanicApiUrl")]
+        public string CryptoPanicApiUrl { get; set; }
+        [YamlProperty("NewsImporter.CryptoPanicToken")]
+        public string CryptoPanicToken { get; set; }
+        [YamlProperty("NewsImporter.CryptoPanicRegions")]
+        public string CryptoPanicRegions { get; set; }
     }
 }
