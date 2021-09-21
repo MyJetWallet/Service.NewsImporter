@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Service.NewsImporter.Domain.NoSql;
 using Service.NewsImporter.Grpc;
+using Service.NewsImporter.Grpc.Models;
 
 namespace Service.NewsImporter.Services
 {

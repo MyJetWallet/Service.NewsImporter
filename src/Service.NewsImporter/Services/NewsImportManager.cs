@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,20 +29,27 @@ namespace Service.NewsImporter.Services
 
         public async Task HandleNewsAsync()
         {
-            var externalTickers = _externalTickerSettingsStorage
-                .GetExternalTickerSettings()
-                .Select(e => e.NewsTicker)
-                .ToList();
-            
-            if (externalTickers.Any())
+            try
             {
-                var news = await _externalNewsImporter.GetNewsAsync(externalTickers);
+                var externalTickers = _externalTickerSettingsStorage
+                    .GetExternalTickerSettings()
+                    .Select(e => e.NewsTicker)
+                    .ToList();
 
-                SwapTickers(news);
-                
-                await _newsStorage.SaveNewsAsync(news);
-                
-                _logger.LogInformation("Import new is done. Count: {count}", news.Count);
+                if (externalTickers.Any())
+                {
+                    var news = await _externalNewsImporter.GetNewsAsync(externalTickers);
+
+                    SwapTickers(news);
+
+                    await _newsStorage.SaveNewsAsync(news);
+
+                    _logger.LogInformation("Import new is done. Count: {count}", news.Count);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"HandleNewsAsync catch ex : {ex.Message}", ex);
             }
         }
 

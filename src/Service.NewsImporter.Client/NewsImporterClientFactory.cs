@@ -11,6 +11,7 @@ namespace Service.NewsImporter.Client
         {
         }
         
-        public IExternalTickerSettingsService GetAExternalTickerSettingsService() => CreateGrpcService<IExternalTickerSettingsService>();
+        public IExternalTickerSettingsService GetExternalTickerSettingsService() => CreateGrpcService<IExternalTickerSettingsService>();
+        public IIntegrationProviderService GetIntegrationProviderService() => CreateGrpcService<IIntegrationProviderService>();
     }
 }

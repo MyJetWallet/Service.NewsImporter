@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Service.NewsImporter.Domain.ExternalSources;
 using Service.NewsImporter.Domain.Models;
@@ -11,17 +12,27 @@ namespace Service.NewsImporter.Services.ExternalSources
 {
     public class StockNewsImporter : IStockNewsImporter
     {
+        private readonly ILogger<StockNewsImporter> _logger;
+        
         private static readonly string ApiUrl = Program.Settings.StockNewsApiUrl;
         private static readonly string Token = Program.Settings.StockNewsToken;
-        private static readonly int ImportCount = Program.Settings.StockNewsImportCount;
+        private static int ImportCount = Program.Settings.StockNewsImportCount;
 
         private static HttpClient _client = new HttpClient();
-        
+
+        public StockNewsImporter(ILogger<StockNewsImporter> logger)
+        {
+            _logger = logger;
+        }
+
         private DateTime? LastImportedNews { get; set; }
-        
-        public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers)
+
+        public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers,
+            bool ignoreLastImportedDate = false)
         {
             var requestUrl = GetRequestUrl(tickers);
+            
+            _logger.LogInformation("Request url is {requestUrl}", requestUrl);
             
             var request = new HttpRequestMessage
             {
@@ -35,12 +46,25 @@ namespace Service.NewsImporter.Services.ExternalSources
             using var response = await _client.SendAsync(request);
             var body = await response.Content.ReadAsStringAsync();
 
+            _logger.LogInformation("Response body is {reponseBody}", body);
+            
             if (string.IsNullOrWhiteSpace(body))
             {
                 return new List<ExternalNews>();
             }
             var stockNewsApiResponse = JsonConvert.DeserializeObject<StockNewsApiResponse>(body);
 
+            if (!string.IsNullOrWhiteSpace(stockNewsApiResponse.message))
+            {
+                var exMessage = stockNewsApiResponse.message;
+                foreach (var error in stockNewsApiResponse.errors.items)
+                {
+                    exMessage += "\n" + error;
+                }
+                var ex = new Exception(exMessage);
+                _logger.LogError($"Response body has body with errors: {exMessage}", ex);
+                throw ex;
+            }
             if (stockNewsApiResponse?.data != null && stockNewsApiResponse.data.Any())
             {
                 var newsList = stockNewsApiResponse.data.Select(e => new ExternalNews()
@@ -56,12 +80,14 @@ namespace Service.NewsImporter.Services.ExternalSources
                     }
                 ).ToList();
 
-                if (LastImportedNews != null)
+                if (LastImportedNews == null && !ignoreLastImportedDate)
                 {
                     newsList = newsList.Where(e => e.Date > LastImportedNews).ToList();
                 }
-                LastImportedNews = newsList.Max(e => e.Date);
-                
+                if (newsList.Any())
+                {
+                    LastImportedNews = newsList.Max(e => e.Date);
+                }
                 return newsList;
             }
             return new List<ExternalNews>();
@@ -77,6 +103,13 @@ namespace Service.NewsImporter.Services.ExternalSources
                 
                 tickersString += ticker;
             }
+
+            if (ImportCount > 50)
+            {
+                _logger.LogError("StockNewsImportCount cannot be more than 50");
+                ImportCount = 50;
+            }
+            
             var requestUrl = $"{ApiUrl}?tickers={tickersString}&items={ImportCount}&token={Token}";
             return requestUrl;
         }
@@ -85,6 +118,13 @@ namespace Service.NewsImporter.Services.ExternalSources
     public class StockNewsApiResponse
     {
         public List<StockNewsEntity> data { get; set; }
+        public string message { get; set; }
+        public StockNewsApiError errors { get; set; }
+    }
+
+    public class StockNewsApiError
+    {
+        public List<string> items { get; set; }
     }
 
     public class StockNewsEntity

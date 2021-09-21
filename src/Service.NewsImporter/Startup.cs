@@ -51,6 +51,7 @@ namespace Service.NewsImporter
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcSchema<ExternalTickerSettingsService, IExternalTickerSettingsService>();
+                endpoints.MapGrpcSchema<IntegrationProviderService, IIntegrationProviderService>();
                 
                 endpoints.MapGrpcSchemaRegistry();
 

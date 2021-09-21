@@ -16,11 +16,11 @@ namespace Service.NewsImporter.Services
             _stockNewsImporter = stockNewsImporter;
         }
 
-        public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers)
+        public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers, bool ignoreLastImportedDate = false)
         {
             var news = new List<ExternalNews>();
 
-            var stockNews = await _stockNewsImporter.GetNewsAsync(tickers);
+            var stockNews = await _stockNewsImporter.GetNewsAsync(tickers, ignoreLastImportedDate);
             if (stockNews != null && stockNews.Any())
                 news.AddRange(stockNews);
 
