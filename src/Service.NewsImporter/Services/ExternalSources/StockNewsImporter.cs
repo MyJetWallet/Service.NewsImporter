@@ -61,7 +61,6 @@ namespace Service.NewsImporter.Services.ExternalSources
 
         private async Task<List<ExternalNews>> GetNewsByUrl(string requestUrl)
         {
-            _logger.LogInformation("Request url is {requestUrl}", requestUrl);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
