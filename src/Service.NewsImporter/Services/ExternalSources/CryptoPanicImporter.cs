@@ -69,12 +69,10 @@ namespace Service.NewsImporter.Services.ExternalSources
             {
                 LastImportedNews = filteredNews.Max(e => e.Date);
             }
-            filteredNews = filteredNews.Where(e => !string.IsNullOrWhiteSpace(e.Title)).ToList();
             return filteredNews;
         }
         private async Task<(string, List<ExternalNews>)> GetNextUrlAndNewsByUrl(string requestUrl)
         {
-            _logger.LogInformation("Request url is {requestUrl}", requestUrl);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -84,7 +82,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                     {"Accept", "application/json"}
                 }
             };
-            await Task.Delay(300);
+            await Task.Delay(Program.Settings.CryptoPanicDelayInMs);
             using var response = await Client.SendAsync(request);
             var cryptoPanicApiResponse = new CryptoPanicApiResponse();
             try

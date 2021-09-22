@@ -7,6 +7,7 @@ using Service.NewsImporter.Domain;
 using Service.NewsImporter.Domain.Models;
 using Service.NewsRepository.Domain.Models;
 using Service.NewsRepository.Grpc;
+using Service.NewsRepository.Grpc.Models;
 
 namespace Service.NewsImporter.Services
 {
@@ -44,10 +45,13 @@ namespace Service.NewsImporter.Services
                 Sentiment = e.Sentiment,
                 IntegrationSource = e.IntegrationSource
             });
-            foreach (var e in internalNews)
+
+            internalNews = internalNews.Where(e => !string.IsNullOrWhiteSpace(e.Topic));
+
+            await _newsService.AddOrUpdateNewsCollection(new AddOrUpdateNewsCollectionRequest()
             {
-                await _newsService.AddOrUpdateNews(e);
-            }
+                NewsCollection = internalNews.ToList()
+            });
         }
     }
 }

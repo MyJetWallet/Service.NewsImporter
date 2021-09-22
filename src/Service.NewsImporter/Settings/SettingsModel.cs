@@ -38,5 +38,8 @@ namespace Service.NewsImporter.Settings
         public string CryptoPanicToken { get; set; }
         [YamlProperty("NewsImporter.CryptoPanicRegions")]
         public string CryptoPanicRegions { get; set; }
+
+        [YamlProperty("NewsImporter.CryptoPanicDelayInMs")]
+        public int CryptoPanicDelayInMs { get; set; }
     }
 }
