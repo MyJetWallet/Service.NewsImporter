@@ -41,7 +41,8 @@ namespace Service.NewsImporter.Services
                 Description = e.Description,
                 UrlAddress = e.NewsUrl,
                 ImageUrl = e.ImageUrl,
-                Sentiment = e.Sentiment
+                Sentiment = e.Sentiment,
+                IntegrationSource = e.IntegrationSource
             });
             foreach (var e in internalNews)
             {

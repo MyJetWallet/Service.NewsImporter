@@ -124,7 +124,8 @@ namespace Service.NewsImporter.Services.ExternalSources
                         Source = e.source.title,
                         ExternalTickers = e.currencies?.Select(x => x.code).ToList() ?? new List<string>(),
                         Title = e.title,
-                        Description = string.Empty
+                        Description = string.Empty,
+                        IntegrationSource = "CryptoPanic"
                     }
                 ).ToList();
             }
