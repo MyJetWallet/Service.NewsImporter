@@ -83,7 +83,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                     {"Accept", "application/json"}
                 }
             };
-            Thread.Sleep(100);
+            await Task.Delay(100);
             using var response = await Client.SendAsync(request);
             var cryptoPanicApiResponse = new CryptoPanicApiResponse();
             try
