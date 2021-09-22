@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -29,13 +30,33 @@ namespace Service.NewsImporter.Services.ExternalSources
         
         public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers, bool ignoreLastImportedDate = false)
         {
-            var requestUrl = GetRequestUrl();
-            var news = await GetNewsByUrl(requestUrl);
+            var newsFromAllPagesAndRegions = new List<ExternalNews>();
+            foreach (var region in Regions.Trim().Split(","))
+            {
+                var requestUrl = GetRequestUrl(region);
+                
+                var nextIsEmpty = false;
+            
+                while (!nextIsEmpty)
+                {
+                    var nextUrlAndNews = await GetNextUrlAndNewsByUrl(requestUrl);
+
+                    if (nextUrlAndNews.Item1 == null)
+                    {
+                        nextIsEmpty = true;
+                    }
+                    else
+                    {
+                        requestUrl = nextUrlAndNews.Item1;
+                    }
+                    newsFromAllPagesAndRegions.AddRange(nextUrlAndNews.Item2);
+                }
+            }
 
             var filteredNews = new List<ExternalNews>();
             foreach (var ticker in tickers)
             {
-                var newsByTicker = news.Where(e => e.ExternalTickers.Contains(ticker));
+                var newsByTicker = newsFromAllPagesAndRegions.Where(e => e.ExternalTickers.Contains(ticker));
                 filteredNews.AddRange(newsByTicker);
             }
             filteredNews = filteredNews.Distinct().ToList();
@@ -50,7 +71,7 @@ namespace Service.NewsImporter.Services.ExternalSources
             }
             return filteredNews;
         }
-        private async Task<List<ExternalNews>> GetNewsByUrl(string requestUrl)
+        private async Task<(string, List<ExternalNews>)> GetNextUrlAndNewsByUrl(string requestUrl)
         {
             _logger.LogInformation("Request url is {requestUrl}", requestUrl);
             var request = new HttpRequestMessage
@@ -62,17 +83,28 @@ namespace Service.NewsImporter.Services.ExternalSources
                     {"Accept", "application/json"}
                 }
             };
+            Thread.Sleep(100);
             using var response = await Client.SendAsync(request);
-            var body = await response.Content.ReadAsStringAsync();
-
-            //_logger.LogInformation("Response body is {reponseBody}", body);
-            
-            if (string.IsNullOrWhiteSpace(body))
+            var cryptoPanicApiResponse = new CryptoPanicApiResponse();
+            try
             {
-                return new List<ExternalNews>();
-            }
-            var cryptoPanicApiResponse = JsonConvert.DeserializeObject<CryptoPanicApiResponse>(body);
+                var body = await response.Content.ReadAsStringAsync();
+                
+                //_logger.LogInformation("Response body is {reponseBody}", body);
 
+                if (string.IsNullOrWhiteSpace(body))
+                {
+                    return (string.Empty, new List<ExternalNews>());
+                }
+
+                cryptoPanicApiResponse = JsonConvert.DeserializeObject<CryptoPanicApiResponse>(body);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+                return (string.Empty, new List<ExternalNews>());
+            }
+            
             if (cryptoPanicApiResponse?.results == null || !cryptoPanicApiResponse.results.Any())
             {
                 var exMessage = "Empty results";
@@ -80,10 +112,10 @@ namespace Service.NewsImporter.Services.ExternalSources
                 _logger.LogError($"Response has body with errors: {exMessage}", ex);
                 throw ex;
             }
-            var responseNews = new List<ExternalNews>();
+            var responseNews = (cryptoPanicApiResponse.next, new List<ExternalNews>());
             if (cryptoPanicApiResponse?.results != null && cryptoPanicApiResponse.results.Any())
             {
-                responseNews = cryptoPanicApiResponse.results.Select(e => new ExternalNews()
+                responseNews.Item2 = cryptoPanicApiResponse.results.Select(e => new ExternalNews()
                     {
                         Date = e.published_at,
                         ImageUrl = string.Empty,
@@ -96,15 +128,14 @@ namespace Service.NewsImporter.Services.ExternalSources
                     }
                 ).ToList();
             }
-            _logger.LogInformation($"Finded {responseNews.Count} news by url : {requestUrl}");
+            _logger.LogInformation($"Finded {responseNews.Item2.Count} news by url : {requestUrl}");
             return responseNews;
         }
-        private string GetRequestUrl()
+        private string GetRequestUrl(string region)
         {
-            var requestUrl = $"{ApiUrl}?auth_token={Token}&regions={Regions}";
+            var requestUrl = $"{ApiUrl}?auth_token={Token}&regions={region}";
             return requestUrl;
         }
-        
     }
 
     public class CryptoPanicApiResponse
