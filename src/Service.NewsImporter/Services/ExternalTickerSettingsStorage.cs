@@ -5,6 +5,7 @@ using Autofac;
 using Microsoft.Extensions.Logging;
 using MyNoSqlServer.Abstractions;
 using Newtonsoft.Json;
+using Service.NewsImporter.Domain.Models;
 using Service.NewsImporter.Domain.NoSql;
 
 namespace Service.NewsImporter.Services

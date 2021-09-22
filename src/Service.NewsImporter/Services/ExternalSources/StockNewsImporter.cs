@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Service.NewsImporter.Domain.ExternalSources;
 using Service.NewsImporter.Domain.Models;
+using Service.NewsImporter.Domain.NoSql;
 
 namespace Service.NewsImporter.Services.ExternalSources
 {
@@ -27,12 +28,12 @@ namespace Service.NewsImporter.Services.ExternalSources
 
         private DateTime? LastImportedNews { get; set; }
 
-        public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers,
+        public async Task<List<ExternalNews>> GetNewsAsync(List<ExternalTickerSettings> tickers,
             bool ignoreLastImportedDate = false)
         {
             if (LastImportedNews != null)
             {
-                var requestUrl = GetRequestUrl(tickers);
+                var requestUrl = GetRequestUrl(tickers.Where(e => e.IntegrationSource == "StockNews").Select(e => e.NewsTicker));
                 var news = await GetNewsByUrl(requestUrl);
 
                 if (!ignoreLastImportedDate)
@@ -46,7 +47,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                 return news;
             }
             var responseNews = new List<ExternalNews>();
-            foreach (var ticker in tickers)
+            foreach (var ticker in tickers.Where(e => e.IntegrationSource == "StockNews").Select(e => e.NewsTicker))
             {
                 var requestUrlByOneTicker = GetRequestUrl(new List<string>(){ticker});
                 var newsByOneTicker = await GetNewsByUrl(requestUrlByOneTicker);

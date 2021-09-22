@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Service.NewsImporter.Domain;
+using Service.NewsImporter.Domain.Models;
 using Service.NewsImporter.Grpc;
 using Service.NewsImporter.Grpc.Models;
 
@@ -35,7 +36,11 @@ namespace Service.NewsImporter.Services
                         ErrorText = "Empty request ticker"
                     };
                 }
-                var news = await _externalNewsImporter.GetNewsAsync(new List<string>(){request.Ticker}, true);
+                var news = await _externalNewsImporter.GetNewsAsync(new List<ExternalTickerSettings>(){new ExternalTickerSettings()
+                {
+                    NewsTicker = request.Ticker,
+                    IntegrationSource = "StockNews"
+                }}, true);
 
                 _logger.LogInformation("ExternalNewsImporter find {newsCount} news for {requestTicker}.", news.Count, request.Ticker);
                 return new GetNewsByTickerResponse()

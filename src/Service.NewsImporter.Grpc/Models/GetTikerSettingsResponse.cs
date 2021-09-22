@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Service.NewsImporter.Domain.Models;
 using Service.NewsImporter.Domain.NoSql;
 
 namespace Service.NewsImporter.Grpc.Models

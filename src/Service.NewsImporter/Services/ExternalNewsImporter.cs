@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Service.NewsImporter.Domain;
 using Service.NewsImporter.Domain.ExternalSources;
 using Service.NewsImporter.Domain.Models;
+using Service.NewsImporter.Domain.NoSql;
 
 namespace Service.NewsImporter.Services
 {
@@ -19,7 +20,8 @@ namespace Service.NewsImporter.Services
             _cryptoPanicImporter = cryptoPanicImporter;
         }
 
-        public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers, bool ignoreLastImportedDate = false)
+        public async Task<List<ExternalNews>> GetNewsAsync(List<ExternalTickerSettings> tickers,
+            bool ignoreLastImportedDate = false)
         {
             var news = new List<ExternalNews>();
 

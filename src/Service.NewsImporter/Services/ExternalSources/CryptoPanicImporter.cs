@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Service.NewsImporter.Domain.ExternalSources;
 using Service.NewsImporter.Domain.Models;
+using Service.NewsImporter.Domain.NoSql;
 
 namespace Service.NewsImporter.Services.ExternalSources
 {
@@ -28,10 +28,11 @@ namespace Service.NewsImporter.Services.ExternalSources
 
         private DateTime? LastImportedNews { get; set; }
         
-        public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers, bool ignoreLastImportedDate = false)
+        public async Task<List<ExternalNews>> GetNewsAsync(List<ExternalTickerSettings> tickers,
+            bool ignoreLastImportedDate = false)
         {
             var newsFromAllPagesAndRegions = new List<ExternalNews>();
-            foreach (var ticker in tickers)
+            foreach (var ticker in tickers.Where(e => e.IntegrationSource == "CryptoPanic").Select(e => e.NewsTicker))
             {
                 foreach (var region in Regions.Trim().Split(","))
                 {
@@ -57,7 +58,7 @@ namespace Service.NewsImporter.Services.ExternalSources
             }
 
             var filteredNews = new List<ExternalNews>();
-            foreach (var ticker in tickers)
+            foreach (var ticker in tickers.Where(e => e.IntegrationSource == "CryptoPanic").Select(e => e.NewsTicker))
             {
                 var newsByTicker = newsFromAllPagesAndRegions.Where(e => e.ExternalTickers.Contains(ticker));
                 filteredNews.AddRange(newsByTicker);

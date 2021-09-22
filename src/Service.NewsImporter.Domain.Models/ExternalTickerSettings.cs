@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Service.NewsImporter.Domain.NoSql
+namespace Service.NewsImporter.Domain.Models
 {
     [DataContract]
     public class ExternalTickerSettings

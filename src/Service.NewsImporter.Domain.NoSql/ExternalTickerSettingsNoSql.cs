@@ -1,4 +1,5 @@
 using MyNoSqlServer.Abstractions;
+using Service.NewsImporter.Domain.Models;
 
 namespace Service.NewsImporter.Domain.NoSql
 {

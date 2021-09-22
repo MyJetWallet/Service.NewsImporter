@@ -33,7 +33,6 @@ namespace Service.NewsImporter.Services
             {
                 var externalTickers = _externalTickerSettingsStorage
                     .GetExternalTickerSettings()
-                    .Select(e => e.NewsTicker)
                     .ToList();
 
                 if (externalTickers.Any())
