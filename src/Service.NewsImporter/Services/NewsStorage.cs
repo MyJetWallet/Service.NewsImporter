@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 using Service.NewsImporter.Domain;
 using Service.NewsImporter.Domain.Models;
 using Service.NewsRepository.Domain.Models;
@@ -14,10 +13,11 @@ namespace Service.NewsImporter.Services
     public class NewsStorage : INewsStorage
     {
         private readonly INewsService _newsService;
-
-        public NewsStorage(INewsService newsService)
+        private readonly ILogger<NewsStorage> _logger;
+        public NewsStorage(INewsService newsService, ILogger<NewsStorage> logger)
         {
             _newsService = newsService;
+            _logger = logger;
         }
 
         public async Task SaveNewsAsync(List<ExternalNews> news)
@@ -35,8 +35,8 @@ namespace Service.NewsImporter.Services
             var internalNews = news.Select(e => new News()
             {
                 AssociatedAssets = e.InternalTickers,
-                Lang = "en",
                 Source = e.Source,
+                Lang = e.Lang,
                 Timestamp = e.Date,
                 Topic = e.Title,
                 Description = e.Description,
@@ -47,10 +47,13 @@ namespace Service.NewsImporter.Services
             });
 
             internalNews = internalNews.Where(e => !string.IsNullOrWhiteSpace(e.Topic));
+            var newsToExecute = internalNews.ToList();
 
+            _logger.LogInformation("Import new is done. Count: {count}", newsToExecute.Count);
+            
             await _newsService.AddOrUpdateNewsCollection(new AddOrUpdateNewsCollectionRequest()
             {
-                NewsCollection = internalNews.ToList()
+                NewsCollection = newsToExecute
             });
         }
     }

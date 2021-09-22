@@ -43,13 +43,11 @@ namespace Service.NewsImporter.Services
                     SwapTickers(news);
 
                     await _newsStorage.SaveNewsAsync(news);
-
-                    _logger.LogInformation("Import new is done. Count: {count}", news.Count);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"HandleNewsAsync catch ex : {ex.Message}", ex);
+                _logger.LogError(ex, $"HandleNewsAsync catch ex : {ex.Message}");
             }
         }
 

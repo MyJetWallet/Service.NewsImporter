@@ -31,25 +31,28 @@ namespace Service.NewsImporter.Services.ExternalSources
         public async Task<List<ExternalNews>> GetNewsAsync(IEnumerable<string> tickers, bool ignoreLastImportedDate = false)
         {
             var newsFromAllPagesAndRegions = new List<ExternalNews>();
-            foreach (var region in Regions.Trim().Split(","))
+            foreach (var ticker in tickers)
             {
-                var requestUrl = GetRequestUrl(region);
-                
-                var nextIsEmpty = false;
-            
-                while (!nextIsEmpty)
+                foreach (var region in Regions.Trim().Split(","))
                 {
-                    var nextUrlAndNews = await GetNextUrlAndNewsByUrl(requestUrl);
+                    var requestUrl = GetRequestUrl(region, ticker);
+                
+                    var nextIsEmpty = false;
+            
+                    while (!nextIsEmpty)
+                    {
+                        var nextUrlAndNews = await GetNextUrlAndNewsByUrl(requestUrl);
 
-                    if (nextUrlAndNews.Item1 == null)
-                    {
-                        nextIsEmpty = true;
+                        if (nextUrlAndNews.Item1 == null || string.IsNullOrWhiteSpace(nextUrlAndNews.Item1))
+                        {
+                            nextIsEmpty = true;
+                        }
+                        else
+                        {
+                            requestUrl = nextUrlAndNews.Item1;
+                        }
+                        newsFromAllPagesAndRegions.AddRange(nextUrlAndNews.Item2);
                     }
-                    else
-                    {
-                        requestUrl = nextUrlAndNews.Item1;
-                    }
-                    newsFromAllPagesAndRegions.AddRange(nextUrlAndNews.Item2);
                 }
             }
 
@@ -73,6 +76,7 @@ namespace Service.NewsImporter.Services.ExternalSources
         }
         private async Task<(string, List<ExternalNews>)> GetNextUrlAndNewsByUrl(string requestUrl)
         {
+            _logger.LogInformation($"GetNextUrlAndNewsByUrl started with url : {requestUrl}");
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -95,7 +99,6 @@ namespace Service.NewsImporter.Services.ExternalSources
                 {
                     return (string.Empty, new List<ExternalNews>());
                 }
-
                 cryptoPanicApiResponse = JsonConvert.DeserializeObject<CryptoPanicApiResponse>(body);
             }
             catch (Exception ex)
@@ -103,15 +106,12 @@ namespace Service.NewsImporter.Services.ExternalSources
                 _logger.LogError(ex.Message, ex);
                 return (string.Empty, new List<ExternalNews>());
             }
-            
+            var responseNews = (cryptoPanicApiResponse.next, new List<ExternalNews>());
             if (cryptoPanicApiResponse?.results == null || !cryptoPanicApiResponse.results.Any())
             {
-                var exMessage = "Empty results";
-                var ex = new Exception(exMessage);
-                _logger.LogError($"Response has body with errors: {exMessage}", ex);
-                throw ex;
+                responseNews.next = string.Empty;
+                return responseNews;
             }
-            var responseNews = (cryptoPanicApiResponse.next, new List<ExternalNews>());
             if (cryptoPanicApiResponse?.results != null && cryptoPanicApiResponse.results.Any())
             {
                 responseNews.Item2 = cryptoPanicApiResponse.results.Select(e => new ExternalNews()
@@ -124,16 +124,17 @@ namespace Service.NewsImporter.Services.ExternalSources
                         ExternalTickers = e.currencies?.Select(x => x.code).ToList() ?? new List<string>(),
                         Title = e.title,
                         Description = string.Empty,
-                        IntegrationSource = "CryptoPanic"
+                        IntegrationSource = "CryptoPanic",
+                        Lang = e.source.region
                     }
                 ).ToList();
             }
             _logger.LogInformation($"Finded {responseNews.Item2.Count} news by url : {requestUrl}");
             return responseNews;
         }
-        private string GetRequestUrl(string region)
+        private string GetRequestUrl(string region, string ticker)
         {
-            var requestUrl = $"{ApiUrl}?auth_token={Token}&regions={region}";
+            var requestUrl = $"{ApiUrl}?auth_token={Token}&regions={region}&currencies={ticker}";
             return requestUrl;
         }
     }

@@ -105,7 +105,8 @@ namespace Service.NewsImporter.Services.ExternalSources
                         ExternalTickers = e.tickers,
                         Title = e.title,
                         Description = e.text,
-                        IntegrationSource = "StockNews"
+                        IntegrationSource = "StockNews",
+                        Lang = "en"
                     }
                 ).ToList();
             }

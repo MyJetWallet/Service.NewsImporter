@@ -17,5 +17,6 @@ namespace Service.NewsImporter.Domain.Models
         [DataMember(Order = 8)] public List<string> ExternalTickers { get; set; }
         [DataMember(Order = 9)] public List<string> InternalTickers { get; set; }
         [DataMember(Order = 10)] public string IntegrationSource { get; set; }
+        [DataMember(Order = 11)] public string Lang { get; set; }
     }
 }
