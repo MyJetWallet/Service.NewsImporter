@@ -69,6 +69,7 @@ namespace Service.NewsImporter.Services.ExternalSources
             {
                 LastImportedNews = filteredNews.Max(e => e.Date);
             }
+            filteredNews = filteredNews.Where(e => !string.IsNullOrWhiteSpace(e.Title)).ToList();
             return filteredNews;
         }
         private async Task<(string, List<ExternalNews>)> GetNextUrlAndNewsByUrl(string requestUrl)
