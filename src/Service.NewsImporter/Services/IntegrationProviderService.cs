@@ -36,10 +36,18 @@ namespace Service.NewsImporter.Services
                         ErrorText = "Empty request ticker"
                     };
                 }
+                if (string.IsNullOrWhiteSpace(request.IntegrationSource))
+                {
+                    return new GetNewsByTickerResponse()
+                    {
+                        Success = false,
+                        ErrorText = "Empty request integration source"
+                    };
+                }
                 var news = await _externalNewsImporter.GetNewsAsync(new List<ExternalTickerSettings>(){new ExternalTickerSettings()
                 {
                     NewsTicker = request.Ticker,
-                    IntegrationSource = "StockNews"
+                    IntegrationSource = request.IntegrationSource
                 }}, true);
 
                 _logger.LogInformation("ExternalNewsImporter find {newsCount} news for {requestTicker}.", news.Count, request.Ticker);

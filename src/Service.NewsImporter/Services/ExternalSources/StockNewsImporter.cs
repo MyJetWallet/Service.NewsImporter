@@ -62,6 +62,10 @@ namespace Service.NewsImporter.Services.ExternalSources
 
         private async Task<List<ExternalNews>> GetNewsByUrl(string requestUrl)
         {
+            if (string.IsNullOrWhiteSpace(requestUrl))
+            {
+                return new List<ExternalNews>();
+            }
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -118,6 +122,10 @@ namespace Service.NewsImporter.Services.ExternalSources
         private string GetRequestUrl(IEnumerable<string> tickers)
         {
             var tickersString = string.Empty;
+            if (!tickers.Any())
+            {
+                return string.Empty;
+            }
             foreach (var ticker in tickers)
             {
                 if (!string.IsNullOrWhiteSpace(tickersString))
