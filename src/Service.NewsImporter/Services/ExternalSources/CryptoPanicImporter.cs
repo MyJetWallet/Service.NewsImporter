@@ -120,7 +120,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                         Date = e.published_at,
                         ImageUrl = string.Empty,
                         NewsUrl = e.url,
-                        Sentiment = string.Empty,
+                        Sentiment = SentimentConvertor.ConvertSentiment(e.votes),
                         Source = e.source.title,
                         ExternalTickers = e.currencies?.Select(x => x.code).ToList() ?? new List<string>(),
                         Title = e.title,
@@ -160,6 +160,20 @@ namespace Service.NewsImporter.Services.ExternalSources
         public long id { get; set; }
         public string url { get; set; }
         public DateTime created_at { get; set; }
+        public CryptoPanicVotes votes { get; set; }
+    }
+
+    public class CryptoPanicVotes
+    {
+        public int negative { get; set; }
+        public int positive { get; set; }
+        public int important { get; set; }
+        public int liked { get; set; }
+        public int disliked { get; set; }
+        public int lol { get; set; }
+        public int toxic { get; set; }
+        public int saved { get; set; }
+        public int comments { get; set; }
     }
 
     public class CryptoPanicCurrencies
