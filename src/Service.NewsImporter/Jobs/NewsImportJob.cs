@@ -25,6 +25,7 @@ namespace Service.NewsImporter.Jobs
 
         private async Task DoTime()
         {
+            _logger.LogInformation("NewsImportJob timer - doitme");
             _timer.ChangeInterval(_interval);
             await _newsImportManager.HandleNewsAsync();
         }
