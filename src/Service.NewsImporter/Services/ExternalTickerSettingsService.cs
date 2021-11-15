@@ -20,25 +20,25 @@ namespace Service.NewsImporter.Services
             _logger = logger;
         }
 
-        public async Task<GetTikerSettingsResponse> GetTikerSettingsAsync()
+        public Task<GetTikerSettingsResponse> GetTikerSettingsAsync()
         {
             try
             {
                 var settings = _externalTickerSettingsStorage.GetExternalTickerSettings();
 
-                return new GetTikerSettingsResponse()
+                return Task.FromResult(new GetTikerSettingsResponse()
                 {
                     Success = true,
                     SettingsCollection = settings
-                };
+                });
             }
             catch (Exception ex)
             {
-                return new GetTikerSettingsResponse()
+                return Task.FromResult(new GetTikerSettingsResponse()
                 {
                     Success = false,
                     ErrorText = ex.Message
-                };
+                });
             }
         }
 
