@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -94,12 +95,12 @@ namespace Service.NewsImporter.Services.ExternalSources
             {
                 var body = await response.Content.ReadAsStringAsync();
                 
-                //_logger.LogInformation("Response body is {reponseBody}", body);
-
-                if (string.IsNullOrWhiteSpace(body))
+                if (response.StatusCode != HttpStatusCode.OK || string.IsNullOrWhiteSpace(body))
                 {
+                    _logger.LogWarning($"Cannot get news from crypto panic. Code: {response.StatusCode}. Content: {body}");
                     return (string.Empty, new List<ExternalNews>());
                 }
+                
                 cryptoPanicApiResponse = JsonConvert.DeserializeObject<CryptoPanicApiResponse>(body);
             }
             catch (Exception ex)

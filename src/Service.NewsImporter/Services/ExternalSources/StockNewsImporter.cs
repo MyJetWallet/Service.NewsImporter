@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -77,11 +78,10 @@ namespace Service.NewsImporter.Services.ExternalSources
             };
             using var response = await Client.SendAsync(request);
             var body = await response.Content.ReadAsStringAsync();
-
-            //_logger.LogInformation("Response body is {reponseBody}", body);
             
-            if (string.IsNullOrWhiteSpace(body))
+            if (string.IsNullOrWhiteSpace(body) || response.StatusCode != HttpStatusCode.OK)
             {
+                _logger.LogWarning($"Cannot get news from StockNews, code: {response.StatusCode}, content: {body}");
                 return new List<ExternalNews>();
             }
             var stockNewsApiResponse = JsonConvert.DeserializeObject<StockNewsApiResponse>(body);
