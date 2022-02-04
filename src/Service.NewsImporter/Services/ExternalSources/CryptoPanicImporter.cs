@@ -125,7 +125,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                         Source = e.source.title,
                         ExternalTickers = e.currencies?.Select(x => x.code).ToList() ?? new List<string>(),
                         Title = e.title,
-                        Description = string.Empty,
+                        Description = e.description,
                         IntegrationSource = "CryptoPanic",
                         Lang = e.source.region
                     }
@@ -136,7 +136,7 @@ namespace Service.NewsImporter.Services.ExternalSources
         }
         private string GetRequestUrl(string region, string ticker)
         {
-            var requestUrl = $"{ApiUrl}?auth_token={Token}&regions={region}&currencies={ticker}";
+            var requestUrl = $"{ApiUrl}?auth_token={Token}&regions={region}&currencies={ticker}&metadata=true";
             return requestUrl;
         }
     }
@@ -155,6 +155,7 @@ namespace Service.NewsImporter.Services.ExternalSources
         public string domain { get; set; }
         public CryptoPanicSource source { get; set; }
         public string title { get; set; }
+        public string description { get; set; }
         public DateTime published_at { get; set; }
         public string slug { get; set; }
         public List<CryptoPanicCurrencies> currencies { get; set; }
