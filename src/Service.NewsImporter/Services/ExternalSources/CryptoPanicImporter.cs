@@ -125,7 +125,7 @@ namespace Service.NewsImporter.Services.ExternalSources
                         Source = e.source.title,
                         ExternalTickers = e.currencies?.Select(x => x.code).ToList() ?? new List<string>(),
                         Title = e.title,
-                        Description = e.description,
+                        Description = e.metadata?.description,
                         IntegrationSource = "CryptoPanic",
                         Lang = e.source.region
                     }
@@ -155,7 +155,7 @@ namespace Service.NewsImporter.Services.ExternalSources
         public string domain { get; set; }
         public CryptoPanicSource source { get; set; }
         public string title { get; set; }
-        public string description { get; set; }
+        public MetadataItem metadata { get; set; }
         public DateTime published_at { get; set; }
         public string slug { get; set; }
         public List<CryptoPanicCurrencies> currencies { get; set; }
@@ -163,6 +163,12 @@ namespace Service.NewsImporter.Services.ExternalSources
         public string url { get; set; }
         public DateTime created_at { get; set; }
         public CryptoPanicVotes votes { get; set; }
+
+        public class MetadataItem
+        {
+            public string description { get; set; }
+            public string image { get; set; }
+        }
     }
 
     public class CryptoPanicVotes
